@@ -1,0 +1,63 @@
+import csv
+import os
+
+# Define file paths
+file_to_load = os.path.join("/Users/JaWook/UCI-VIRT-DATA-PT-12-2024-U-LOLC-MWTH/02-Homework/03-Python/Starter_Code/PyBank/Resources/budget_data.csv")
+file_to_output = os.path.join("/Users/JaWook/UCI-VIRT-DATA-PT-12-2024-U-LOLC-MWTH/02-Homework/03-Python/Starter_Code/PyBank/Analysis/budget analysis.txt")
+
+# Define variables to track financial data
+total_months = 0
+total_net = 0
+net_change_list = []
+date_list = []
+previous_net = None
+
+# Open and read the CSV file
+with open(file_to_load) as financial_data:
+    reader = csv.reader(financial_data)
+    
+    # Skip the header row
+    header = next(reader)
+    
+    # Process the first row of data
+    first_row = next(reader)
+    total_months += 1
+    total_net = int(first_row[1])
+    previous_net = int(first_row[1])
+    date_list.append(first_row[0])
+    
+    # Loop through the remaining rows
+    for row in reader:
+        total_months += 1
+        current_net = int(row[1])
+        total_net += current_net
+        
+        # Calculate net change
+        net_change = current_net - previous_net
+        net_change_list.append(net_change)
+        date_list.append(row[0])
+        
+        previous_net = current_net
+
+# Perform calculations
+average_change = sum(net_change_list) / len(net_change_list)
+greatest_increase = max(net_change_list)
+greatest_decrease = min(net_change_list)
+greatest_increase_date = date_list[net_change_list.index(greatest_increase) + 1]
+greatest_decrease_date = date_list[net_change_list.index(greatest_decrease) + 1]
+
+# Output results
+output = (
+    f"Financial Analysis\n"
+    f"----------------------------\n"
+    f"Total Months: {total_months}\n"
+    f"Total: ${total_net}\n"
+    f"Average Change: ${average_change:.2f}\n"
+    f"Greatest Increase in Profits: {greatest_increase_date} (${greatest_increase})\n"
+    f"Greatest Decrease in Profits: {greatest_decrease_date} (${greatest_decrease})\n"
+)
+print(output)
+
+# Save results to a file
+with open(file_to_output, "w") as txt_file:
+    txt_file.write(output)
